@@ -104,7 +104,7 @@ struct TranscriptionHistoryView: View {
                                                 ProgressView()
                                                     .controlSize(.small)
                                             }
-                                            Text(isLoading ? "Loading..." : "Load More")
+                                            Text(isLoading ? "読み込み中..." : "さらに読み込む")
                                                 .font(.system(size: 14, weight: .medium))
                                         }
                                         .frame(maxWidth: .infinity)
@@ -139,13 +139,13 @@ struct TranscriptionHistoryView: View {
                     .animation(.easeInOut(duration: 0.3), value: !selectedTranscriptions.isEmpty)
             }
         }
-        .alert("Delete Selected Items?", isPresented: $showDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
+        .alert("選択した項目を削除しますか？", isPresented: $showDeleteConfirmation) {
+            Button("削除", role: .destructive) {
                 deleteSelectedTranscriptions()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("キャンセル", role: .cancel) {}
         } message: {
-            Text("This action cannot be undone. Are you sure you want to delete \(selectedTranscriptions.count) item\(selectedTranscriptions.count == 1 ? "" : "s")?")
+            Text("この操作は元に戻せません。\(selectedTranscriptions.count)件の項目を削除してもよろしいですか？")
         }
         .sheet(isPresented: $showAnalysisView) {
             if !selectedTranscriptions.isEmpty {
@@ -195,7 +195,7 @@ struct TranscriptionHistoryView: View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.secondary)
-            TextField("Search transcriptions", text: $searchText)
+            TextField("文字起こしを検索", text: $searchText)
                 .font(.system(size: 16, weight: .regular, design: .default))
                 .textFieldStyle(PlainTextFieldStyle())
         }
@@ -210,9 +210,9 @@ struct TranscriptionHistoryView: View {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 50))
                 .foregroundColor(.secondary)
-            Text("No transcriptions found")
+            Text("文字起こしが見つかりません")
                 .font(.system(size: 24, weight: .semibold, design: .default))
-            Text("Your history will appear here")
+            Text("履歴がここに表示されます")
                 .font(.system(size: 18, weight: .regular, design: .default))
                 .foregroundColor(.secondary)
         }
@@ -223,28 +223,28 @@ struct TranscriptionHistoryView: View {
     
     private var selectionToolbar: some View {
         HStack(spacing: 12) {
-            Text("\(selectedTranscriptions.count) selected")
+            Text("\(selectedTranscriptions.count)件選択中")
                 .foregroundColor(.secondary)
                 .font(.system(size: 14))
-            
+
             Spacer()
-            
+
             Button(action: {
                 showAnalysisView = true
             }) {
                 HStack(spacing: 4) {
                     Image(systemName: "chart.bar.xaxis")
-                    Text("Analyze")
+                    Text("分析")
                 }
             }
             .buttonStyle(.borderless)
-            
+
             Button(action: {
                 exportService.exportTranscriptionsToCSV(transcriptions: Array(selectedTranscriptions))
             }) {
                 HStack(spacing: 4) {
                     Image(systemName: "square.and.arrow.up")
-                    Text("Export")
+                    Text("エクスポート")
                 }
             }
             .buttonStyle(.borderless)

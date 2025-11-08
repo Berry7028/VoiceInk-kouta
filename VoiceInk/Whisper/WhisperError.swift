@@ -14,30 +14,30 @@ extension WhisperStateError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .modelLoadFailed:
-            return "Failed to load the transcription model."
+            return "文字起こしモデルの読み込みに失敗しました。"
         case .transcriptionFailed:
-            return "Failed to transcribe the audio."
+            return "音声の文字起こしに失敗しました。"
         case .whisperCoreFailed:
-            return "The core transcription engine failed."
+            return "コア文字起こしエンジンが失敗しました。"
         case .unzipFailed:
-            return "Failed to unzip the downloaded Core ML model."
+            return "ダウンロードしたCore MLモデルの解凍に失敗しました。"
         case .unknownError:
-            return "An unknown error occurred."
+            return "不明なエラーが発生しました。"
         }
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
         case .modelLoadFailed:
-            return "Try selecting a different model or redownloading the current model."
+            return "別のモデルを選択するか、現在のモデルを再ダウンロードしてください。"
         case .transcriptionFailed:
-            return "Check the default model try again. If the problem persists, try a different model."
+            return "デフォルトモデルを確認して再試行してください。問題が解決しない場合は、別のモデルを試してください。"
         case .whisperCoreFailed:
-            return "This can happen due to an issue with the audio recording or insufficient system resources. Please try again, or restart the app."
+            return "これは音声録音の問題またはシステムリソース不足が原因で発生する可能性があります。再試行するか、アプリを再起動してください。"
         case .unzipFailed:
-            return "The downloaded Core ML model archive might be corrupted. Try deleting the model and downloading it again. Check available disk space."
+            return "ダウンロードしたCore MLモデルアーカイブが破損している可能性があります。モデルを削除して再度ダウンロードしてください。利用可能なディスク容量を確認してください。"
         case .unknownError:
-            return "Please restart the application. If the problem persists, contact support."
+            return "アプリケーションを再起動してください。問題が解決しない場合は、サポートに連絡してください。"
         }
     }
 } 

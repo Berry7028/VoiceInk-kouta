@@ -4,16 +4,16 @@ import KeyboardShortcuts
 
 // ViewType enum with all cases
 enum ViewType: String, CaseIterable, Identifiable {
-    case metrics = "Dashboard"
-    case transcribeAudio = "Transcribe Audio"
-    case history = "History"
-    case models = "AI Models"
-    case enhancement = "Enhancement"
-    case powerMode = "Power Mode"
-    case permissions = "Permissions"
-    case audioInput = "Audio Input"
-    case dictionary = "Dictionary"
-    case settings = "Settings"
+    case metrics = "ダッシュボード"
+    case transcribeAudio = "音声文字起こし"
+    case history = "履歴"
+    case models = "AIモデル"
+    case enhancement = "機能強化"
+    case powerMode = "パワーモード"
+    case permissions = "権限"
+    case audioInput = "音声入力"
+    case dictionary = "辞書"
+    case settings = "設定"
 
     var id: String { rawValue }
 
@@ -121,7 +121,7 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .navigationTitle(selectedView.rawValue)
             } else {
-                Text("Select a view")
+                Text("ビューを選択してください")
                     .foregroundColor(.secondary)
             }
         }
@@ -130,19 +130,19 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .navigateToDestination)) { notification in
             if let destination = notification.userInfo?["destination"] as? String {
                 switch destination {
-                case "Settings":
+                case "Settings", "設定":
                     selectedView = .settings
-                case "AI Models":
+                case "AI Models", "AIモデル":
                     selectedView = .models
-                case "History":
+                case "History", "履歴":
                     selectedView = .history
-                case "Permissions":
+                case "Permissions", "権限":
                     selectedView = .permissions
-                case "Enhancement":
+                case "Enhancement", "機能強化":
                     selectedView = .enhancement
-                case "Transcribe Audio":
+                case "Transcribe Audio", "音声文字起こし":
                     selectedView = .transcribeAudio
-                case "Power Mode":
+                case "Power Mode", "パワーモード":
                     selectedView = .powerMode
                 default:
                     break

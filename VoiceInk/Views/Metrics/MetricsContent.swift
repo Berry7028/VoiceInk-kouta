@@ -37,9 +37,9 @@ struct MetricsContent: View {
             Image(systemName: "waveform")
                 .font(.system(size: 56, weight: .semibold))
                 .foregroundColor(.secondary)
-            Text("No Transcriptions Yet")
+            Text("まだ文字起こしがありません")
                 .font(.title3.weight(.semibold))
-            Text("Start your first recording to unlock value insights.")
+            Text("最初の録音を開始して、価値のある洞察を得ましょう。")
                 .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -53,7 +53,7 @@ struct MetricsContent: View {
             HStack {
                 Spacer(minLength: 0)
                 
-                (Text("You have saved ")
+                (Text("VoiceInkで ")
                     .fontWeight(.bold)
                     .foregroundColor(.white.opacity(0.85))
                  +
@@ -62,7 +62,7 @@ struct MetricsContent: View {
                     .font(.system(size: 36, design: .rounded))
                     .foregroundStyle(.white)
                  +
-                 Text(" with VoiceInk")
+                 Text(" を節約しました")
                     .fontWeight(.bold)
                     .foregroundColor(.white.opacity(0.85))
                 )
@@ -98,35 +98,35 @@ struct MetricsContent: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 240), spacing: 16)], spacing: 16) {
             MetricCard(
                 icon: "mic.fill",
-                title: "Sessions Recorded",
+                title: "録音セッション数",
                 value: "\(transcriptions.count)",
-                detail: "VoiceInk sessions completed",
+                detail: "完了したVoiceInkセッション",
                 color: .purple
             )
-            
+
             MetricCard(
                 icon: "text.alignleft",
-                title: "Words Dictated",
+                title: "音声入力した単語数",
                 value: Formatters.formattedNumber(totalWordsTranscribed),
-                detail: "words generated",
+                detail: "生成された単語",
                 color: Color(nsColor: .controlAccentColor)
             )
-            
+
             MetricCard(
                 icon: "speedometer",
-                title: "Words Per Minute",
+                title: "1分あたりの単語数",
                 value: averageWordsPerMinute > 0
                     ? String(format: "%.1f", averageWordsPerMinute)
                     : "–",
-                detail: "VoiceInk vs. typing by hand",
+                detail: "VoiceInk vs. 手動タイピング",
                 color: .yellow
             )
-            
+
             MetricCard(
                 icon: "keyboard.fill",
-                title: "Keystrokes Saved",
+                title: "節約したキーストローク数",
                 value: Formatters.formattedNumber(totalKeystrokesSaved),
-                detail: "fewer keystrokes",
+                detail: "削減されたキーストローク",
                 color: .orange
             )
         }

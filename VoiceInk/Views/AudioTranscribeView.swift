@@ -79,14 +79,14 @@ struct AudioTranscribeView: View {
                                 if isEnhancementEnabled {
                                     Divider()
                                         .frame(height: 20)
-                                    
+
                                     // Prompt Selection
                                     HStack(spacing: 8) {
-                                        Text("Prompt:")
+                                        Text("プロンプト:")
                                             .font(.subheadline)
-                                        
+
                                         if enhancementService.allPrompts.isEmpty {
-                                            Text("No prompts available")
+                                            Text("利用可能なプロンプトがありません")
                                                 .foregroundColor(.secondary)
                                                 .italic()
                                                 .font(.caption)
@@ -126,7 +126,7 @@ struct AudioTranscribeView: View {
                     
                     // Action Buttons in a row
                     HStack(spacing: 12) {
-                        Button("Start Transcription") {
+                        Button("文字起こしを開始") {
                             if let url = selectedAudioURL {
                                 transcriptionManager.startProcessing(
                                     url: url,
@@ -136,8 +136,8 @@ struct AudioTranscribeView: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
-                        
-                        Button("Choose Different File") {
+
+                        Button("別のファイルを選択") {
                             selectedAudioURL = nil
                             isAudioFileSelected = false
                         }
@@ -165,13 +165,13 @@ struct AudioTranscribeView: View {
                             .font(.system(size: 32))
                             .foregroundColor(isDropTargeted ? .blue : .gray)
                         
-                        Text("Drop audio or video file here")
+                        Text("音声または動画ファイルをここにドロップ")
                             .font(.headline)
-                        
-                        Text("or")
+
+                        Text("または")
                             .foregroundColor(.secondary)
-                        
-                        Button("Choose File") {
+
+                        Button("ファイルを選択") {
                             selectFile()
                         }
                         .buttonStyle(.bordered)
@@ -182,7 +182,7 @@ struct AudioTranscribeView: View {
                 .padding(.horizontal)
             }
             
-            Text("Supported formats: WAV, MP3, M4A, AIFF, MP4, MOV")
+            Text("対応フォーマット: WAV, MP3, M4A, AIFF, MP4, MOV")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }

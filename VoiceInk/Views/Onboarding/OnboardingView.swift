@@ -27,14 +27,14 @@ struct OnboardingView: View {
                                 
                                 // Title and subtitle
                                 VStack(spacing: 16) {
-                                    Text("Welcome to the Future of Typing")
+                                    Text("未来のタイピングへようこそ")
                                         .font(.system(size: min(geometry.size.width * 0.055, 42), weight: .bold, design: .rounded))
                                         .foregroundColor(.white)
                                         .opacity(textOpacity)
                                         .multilineTextAlignment(.center)
                                         .padding(.horizontal)
-                                    
-                                    Text("A New Way to Type")
+
+                                    Text("新しいタイピング体験")
                                         .font(.system(size: min(geometry.size.width * 0.032, 24), weight: .medium, design: .rounded))
                                         .foregroundColor(.white.opacity(0.7))
                                         .opacity(textOpacity)
@@ -61,7 +61,7 @@ struct OnboardingView: View {
                                             showPermissions = true
                                         }
                                     }) {
-                                        Text("Get Started")
+                                        Text("始める")
                                             .font(.system(size: 18, weight: .semibold))
                                             .foregroundColor(.black)
                                             .frame(width: min(geometry.size.width * 0.3, 200), height: 50)
@@ -69,8 +69,8 @@ struct OnboardingView: View {
                                             .cornerRadius(25)
                                     }
                                     .buttonStyle(ScaleButtonStyle())
-                                    
-                                    SkipButton(text: "Skip Tour") {
+
+                                    SkipButton(text: "ツアーをスキップ") {
                                         hasCompletedOnboarding = true
                                     }
                                 }
@@ -110,11 +110,11 @@ struct OnboardingView: View {
 // MARK: - Supporting Views
 struct TypewriterRoles: View {
     private let roles = [
-        "Your Writing Assistant",
-        "Your Vibe-Coding Assistant",
-        "Works Everywhere on Mac with a click",
-        "100% offline & private",
-       
+        "あなたの執筆アシスタント",
+        "あなたのコーディングアシスタント",
+        "Macのどこでもワンクリックで動作",
+        "100%オフライン＆プライベート",
+
     ]
     
     @State private var displayedText = ""

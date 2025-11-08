@@ -24,12 +24,12 @@ struct SettingsView: View {
             VStack(spacing: 24) {
                 SettingsSection(
                     icon: "command.circle",
-                    title: "VoiceInk Shortcuts",
-                    subtitle: "Choose how you want to trigger VoiceInk"
+                    title: "VoiceInkショートカット",
+                    subtitle: "VoiceInkを起動する方法を選択"
                 ) {
                     VStack(alignment: .leading, spacing: 18) {
                         hotkeyView(
-                            title: "Hotkey 1",
+                            title: "ホットキー1",
                             binding: $hotkeyManager.selectedHotkey1,
                             shortcutName: .toggleMiniRecorder
                         )
@@ -37,7 +37,7 @@ struct SettingsView: View {
                         if hotkeyManager.selectedHotkey2 != .none {
                             Divider()
                             hotkeyView(
-                                title: "Hotkey 2",
+                                title: "ホットキー2",
                                 binding: $hotkeyManager.selectedHotkey2,
                                 shortcutName: .toggleMiniRecorder2,
                                 isRemovable: true,
@@ -53,14 +53,14 @@ struct SettingsView: View {
                                 Button(action: {
                                     withAnimation { hotkeyManager.selectedHotkey2 = .rightOption }
                                 }) {
-                                    Label("Add another hotkey", systemImage: "plus.circle.fill")
+                                    Label("別のホットキーを追加", systemImage: "plus.circle.fill")
                                 }
                                 .buttonStyle(.plain)
                                 .foregroundColor(.accentColor)
                             }
                         }
 
-                        Text("Quick tap to start hands-free recording (tap again to stop). Press and hold for push-to-talk (release to stop recording).")
+                        Text("クイックタップでハンズフリー録音を開始します（再度タップで停止）。長押しでプッシュトゥトーク（離すと録音停止）。")
                             .font(.system(size: 12))
                             .foregroundColor(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -69,49 +69,49 @@ struct SettingsView: View {
 
                 SettingsSection(
                     icon: "keyboard.badge.ellipsis",
-                    title: "Other App Shortcuts",
-                    subtitle: "Additional shortcuts for VoiceInk"
+                    title: "その他のショートカット",
+                    subtitle: "VoiceInkの追加ショートカット"
                 ) {
                     VStack(alignment: .leading, spacing: 18) {
                         // Paste Last Transcript (Original)
                         HStack(spacing: 12) {
-                            Text("Paste Last Transcript(Original)")
+                            Text("最後の文字起こしを貼り付け（元）")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundColor(.secondary)
-                            
+
                             KeyboardShortcuts.Recorder(for: .pasteLastTranscription)
                                 .controlSize(.small)
-                            
+
                             InfoTip(
-                                title: "Paste Last Transcript(Original)",
-                                message: "Shortcut for pasting the most recent transcription."
+                                title: "最後の文字起こしを貼り付け（元）",
+                                message: "最新の文字起こしを貼り付けるショートカットです。"
                             )
-                            
+
                             Spacer()
                         }
 
                         // Paste Last Transcript (Enhanced)
                         HStack(spacing: 12) {
-                            Text("Paste Last Transcript(Enhanced)")
+                            Text("最後の文字起こしを貼り付け（強化版）")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundColor(.secondary)
-                            
+
                             KeyboardShortcuts.Recorder(for: .pasteLastEnhancement)
                                 .controlSize(.small)
-                            
+
                             InfoTip(
-                                title: "Paste Last Transcript(Enhanced)",
-                                message: "Pastes the enhanced transcript if available, otherwise falls back to the original."
+                                title: "最後の文字起こしを貼り付け（強化版）",
+                                message: "強化された文字起こしがある場合はそれを貼り付け、なければ元の文字起こしを使用します。"
                             )
-                            
+
                             Spacer()
                         }
 
-                        
+
 
                         // Retry Last Transcription
                         HStack(spacing: 12) {
-                            Text("Retry Last Transcription")
+                            Text("最後の文字起こしを再試行")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundColor(.secondary)
 
@@ -119,8 +119,8 @@ struct SettingsView: View {
                                 .controlSize(.small)
 
                             InfoTip(
-                                title: "Retry Last Transcription",
-                                message: "Re-transcribe the last recorded audio using the current model and copy the result."
+                                title: "最後の文字起こしを再試行",
+                                message: "現在のモデルを使用して最後に録音した音声を再文字起こしし、結果をコピーします。"
                             )
 
                             Spacer()
@@ -134,7 +134,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             HStack(spacing: 8) {
                                 Toggle(isOn: $isCustomCancelEnabled.animation()) {
-                                    Text("Custom Cancel Shortcut")
+                                    Text("カスタムキャンセルショートカット")
                                 }
                                 .toggleStyle(.switch)
                                 .onChange(of: isCustomCancelEnabled) { _, newValue in
@@ -142,22 +142,22 @@ struct SettingsView: View {
                                         KeyboardShortcuts.setShortcut(nil, for: .cancelRecorder)
                                     }
                                 }
-                                
+
                                 InfoTip(
-                                    title: "Dismiss Recording",
-                                    message: "Shortcut for cancelling the current recording session. Default: double-tap Escape."
+                                    title: "録音を閉じる",
+                                    message: "現在の録音セッションをキャンセルするショートカットです。デフォルト: Escapeを2回タップ。"
                                 )
                             }
-                            
+
                             if isCustomCancelEnabled {
                                 HStack(spacing: 12) {
-                                    Text("Cancel Shortcut")
+                                    Text("キャンセルショートカット")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.secondary)
-                                    
+
                                     KeyboardShortcuts.Recorder(for: .cancelRecorder)
                                         .controlSize(.small)
-                                    
+
                                     Spacer()
                                 }
                                 .padding(.leading, 16)
@@ -170,21 +170,21 @@ struct SettingsView: View {
                         // Middle-Click Toggle
                         VStack(alignment: .leading, spacing: 12) {
                             HStack(spacing: 8) {
-                                Toggle("Enable Middle-Click Toggle", isOn: $hotkeyManager.isMiddleClickToggleEnabled.animation())
+                                Toggle("ミドルクリックトグルを有効化", isOn: $hotkeyManager.isMiddleClickToggleEnabled.animation())
                                     .toggleStyle(.switch)
-                                
+
                                 InfoTip(
-                                    title: "Middle-Click Toggle",
-                                    message: "Use middle mouse button to toggle VoiceInk recording."
+                                    title: "ミドルクリックトグル",
+                                    message: "マウスの中ボタンでVoiceInkの録音を切り替えます。"
                                 )
                             }
 
                             if hotkeyManager.isMiddleClickToggleEnabled {
                                 HStack(spacing: 8) {
-                                    Text("Activation Delay")
+                                    Text("起動遅延")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.secondary)
-                                    
+
                                     TextField("", value: $hotkeyManager.middleClickActivationDelay, formatter: {
                                         let formatter = NumberFormatter()
                                         formatter.numberStyle = .none
@@ -196,10 +196,10 @@ struct SettingsView: View {
                                     .background(Color(NSColor.textBackgroundColor))
                                     .cornerRadius(5)
                                     .frame(width: 70)
-                                    
+
                                     Text("ms")
                                         .foregroundColor(.secondary)
-                                    
+
                                     Spacer()
                                 }
                                 .padding(.leading, 16)
@@ -211,32 +211,32 @@ struct SettingsView: View {
 
                 SettingsSection(
                     icon: "speaker.wave.2.bubble.left.fill",
-                    title: "Recording Feedback",
-                    subtitle: "Customize app & system feedback"
+                    title: "録音フィードバック",
+                    subtitle: "アプリとシステムのフィードバックをカスタマイズ"
                 ) {
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle(isOn: .init(
                             get: { SoundManager.shared.isEnabled },
                             set: { SoundManager.shared.isEnabled = $0 }
                         )) {
-                            Text("Sound feedback")
+                            Text("サウンドフィードバック")
                         }
                         .toggleStyle(.switch)
 
                         Toggle(isOn: $mediaController.isSystemMuteEnabled) {
-                            Text("Mute system audio during recording")
+                            Text("録音中はシステム音声をミュート")
                         }
                         .toggleStyle(.switch)
-                        .help("Automatically mute system audio when recording starts and restore when recording stops")
+                        .help("録音開始時にシステム音声を自動的にミュートし、録音停止時に復元します")
 
                         Toggle(isOn: Binding(
                             get: { UserDefaults.standard.bool(forKey: "preserveTranscriptInClipboard") },
                             set: { UserDefaults.standard.set($0, forKey: "preserveTranscriptInClipboard") }
                         )) {
-                            Text("Preserve transcript in clipboard")
+                            Text("クリップボードに文字起こしを保持")
                         }
                         .toggleStyle(.switch)
-                        .help("Keep the transcribed text in clipboard instead of restoring the original clipboard content")
+                        .help("元のクリップボードの内容を復元せず、文字起こしテキストをクリップボードに保持します")
 
                     }
                 }
@@ -247,16 +247,16 @@ struct SettingsView: View {
 
                 SettingsSection(
                     icon: "rectangle.on.rectangle",
-                    title: "Recorder Style",
-                    subtitle: "Choose your preferred recorder interface"
+                    title: "レコーダースタイル",
+                    subtitle: "録音画面の表示方法を選択"
                 ) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Select how you want the recorder to appear on your screen.")
+                        Text("画面上に録音画面をどのように表示するかを選択してください。")
                             .settingsDescription()
-                        
-                        Picker("Recorder Style", selection: $whisperState.recorderType) {
-                            Text("Notch Recorder").tag("notch")
-                            Text("Mini Recorder").tag("mini")
+
+                        Picker("レコーダースタイル", selection: $whisperState.recorderType) {
+                            Text("ノッチレコーダー").tag("notch")
+                            Text("ミニレコーダー").tag("mini")
                         }
                         .pickerStyle(.radioGroup)
                         .padding(.vertical, 4)
@@ -265,14 +265,14 @@ struct SettingsView: View {
 
                 SettingsSection(
                     icon: "doc.on.clipboard",
-                    title: "Paste Method",
-                    subtitle: "Choose how text is pasted"
+                    title: "貼り付け方法",
+                    subtitle: "テキストの貼り付け方法を選択"
                 ) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Select the method used to paste text. Use AppleScript if you have a non-standard keyboard layout.")
+                        Text("テキストの貼り付けに使用する方法を選択してください。標準以外のキーボードレイアウトを使用している場合はAppleScriptを使用してください。")
                             .settingsDescription()
-                        
-                        Toggle("Use AppleScript Paste Method", isOn: Binding(
+
+                        Toggle("AppleScript貼り付け方法を使用", isOn: Binding(
                             get: { UserDefaults.standard.bool(forKey: "UseAppleScriptPaste") },
                             set: { UserDefaults.standard.set($0, forKey: "UseAppleScriptPaste") }
                         ))
@@ -282,17 +282,23 @@ struct SettingsView: View {
 
                 SettingsSection(
                     icon: "gear",
-                    title: "General",
-                    subtitle: "Appearance and startup"
+                    title: "一般",
+                    subtitle: "外観、起動、アップデート"
                 ) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Toggle("Hide Dock Icon (Menu Bar Only)", isOn: $menuBarManager.isMenuBarOnly)
+                        Toggle("Dockアイコンを非表示（メニューバーのみ）", isOn: $menuBarManager.isMenuBarOnly)
                             .toggleStyle(.switch)
-                        
+
                         LaunchAtLogin.Toggle()
                             .toggleStyle(.switch)
 
-                        Toggle("Show app announcements", isOn: $enableAnnouncements)
+                        Toggle("自動アップデート確認を有効化", isOn: $autoUpdateCheck)
+                            .toggleStyle(.switch)
+                            .onChange(of: autoUpdateCheck) { _, newValue in
+                                updaterViewModel.toggleAutoUpdates(newValue)
+                            }
+
+                        Toggle("アプリのお知らせを表示", isOn: $enableAnnouncements)
                             .toggleStyle(.switch)
                             .onChange(of: enableAnnouncements) { _, newValue in
                                 if newValue {
@@ -302,9 +308,16 @@ struct SettingsView: View {
                                 }
                             }
 
+                        Button("今すぐアップデートを確認") {
+                            updaterViewModel.checkForUpdates()
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        .disabled(!updaterViewModel.canCheckForUpdates)
+
                         Divider()
 
-                        Button("Reset Onboarding") {
+                        Button("オンボーディングをリセット") {
                             showResetOnboardingAlert = true
                         }
                         .buttonStyle(.bordered)
@@ -314,52 +327,52 @@ struct SettingsView: View {
                 
                 SettingsSection(
                     icon: "lock.shield",
-                    title: "Data & Privacy",
-                    subtitle: "Control transcript history and storage"
+                    title: "データとプライバシー",
+                    subtitle: "文字起こし履歴とストレージを管理"
                 ) {
                     AudioCleanupSettingsView()
                 }
-                
+
                 SettingsSection(
                     icon: "arrow.up.arrow.down.circle",
-                    title: "Data Management",
-                    subtitle: "Import or export your settings"
+                    title: "データ管理",
+                    subtitle: "設定のインポート・エクスポート"
                 ) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Export your custom prompts, power modes, word replacements, keyboard shortcuts, and app preferences to a backup file. API keys are not included in the export.")
+                        Text("カスタムプロンプト、パワーモード、単語置換、キーボードショートカット、アプリの設定をバックアップファイルにエクスポートします。APIキーはエクスポートに含まれません。")
                             .settingsDescription()
 
                         HStack(spacing: 12) {
                             Button {
                                 ImportExportService.shared.importSettings(
-                                    enhancementService: enhancementService, 
-                                    whisperPrompt: whisperState.whisperPrompt, 
-                                    hotkeyManager: hotkeyManager, 
-                                    menuBarManager: menuBarManager, 
-                                    mediaController: MediaController.shared, 
+                                    enhancementService: enhancementService,
+                                    whisperPrompt: whisperState.whisperPrompt,
+                                    hotkeyManager: hotkeyManager,
+                                    menuBarManager: menuBarManager,
+                                    mediaController: MediaController.shared,
                                     playbackController: PlaybackController.shared,
                                     soundManager: SoundManager.shared,
                                     whisperState: whisperState
                                 )
                             } label: {
-                                Label("Import Settings...", systemImage: "arrow.down.doc")
+                                Label("設定をインポート...", systemImage: "arrow.down.doc")
                                     .frame(maxWidth: .infinity)
                             }
                             .controlSize(.large)
 
                             Button {
                                 ImportExportService.shared.exportSettings(
-                                    enhancementService: enhancementService, 
-                                    whisperPrompt: whisperState.whisperPrompt, 
-                                    hotkeyManager: hotkeyManager, 
-                                    menuBarManager: menuBarManager, 
-                                    mediaController: MediaController.shared, 
+                                    enhancementService: enhancementService,
+                                    whisperPrompt: whisperState.whisperPrompt,
+                                    hotkeyManager: hotkeyManager,
+                                    menuBarManager: menuBarManager,
+                                    mediaController: MediaController.shared,
                                     playbackController: PlaybackController.shared,
                                     soundManager: SoundManager.shared,
                                     whisperState: whisperState
                                 )
                             } label: {
-                                Label("Export Settings...", systemImage: "arrow.up.doc")
+                                Label("設定をエクスポート...", systemImage: "arrow.up.doc")
                                     .frame(maxWidth: .infinity)
                             }
                             .controlSize(.large)
@@ -374,16 +387,16 @@ struct SettingsView: View {
         .onAppear {
             isCustomCancelEnabled = KeyboardShortcuts.getShortcut(for: .cancelRecorder) != nil
         }
-        .alert("Reset Onboarding", isPresented: $showResetOnboardingAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Reset", role: .destructive) {
+        .alert("オンボーディングをリセット", isPresented: $showResetOnboardingAlert) {
+            Button("キャンセル", role: .cancel) { }
+            Button("リセット", role: .destructive) {
                 // Defer state change to avoid layout issues while alert dismisses
                 DispatchQueue.main.async {
                     hasCompletedOnboarding = false
                 }
             }
         } message: {
-            Text("Are you sure you want to reset the onboarding? You'll see the introduction screens again the next time you launch the app.")
+            Text("オンボーディングをリセットしてもよろしいですか？次回アプリを起動したときに、再度紹介画面が表示されます。")
         }
     }
     

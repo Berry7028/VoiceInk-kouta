@@ -17,17 +17,17 @@ struct EnhancementSettingsView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
-                                    Text("Enable Enhancement")
+                                    Text("機能強化を有効化")
                                         .font(.headline)
-                                    
+
                                     InfoTip(
-                                        title: "AI Enhancement",
-                                        message: "AI enhancement lets you pass the transcribed audio through LLMS to post-process using different prompts suitable for different use cases like e-mails, summary, writing, etc.",
+                                        title: "AI機能強化",
+                                        message: "AI機能強化により、文字起こしされた音声をLLMを通して処理し、メール、要約、執筆などの異なる用途に適した様々なプロンプトを使用して後処理することができます。",
                                         learnMoreURL: "https://www.youtube.com/@tryvoiceink/videos"
                                     )
                                 }
-                                
-                                Text("Turn on AI-powered enhancement features")
+
+                                Text("AI駆動の機能強化を有効にする")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -42,19 +42,19 @@ struct EnhancementSettingsView: View {
                         
                         HStack(spacing: 20) {
                             VStack(alignment: .leading, spacing: 4) {
-                                Toggle("Clipboard Context", isOn: $enhancementService.useClipboardContext)
+                                Toggle("クリップボードコンテキスト", isOn: $enhancementService.useClipboardContext)
                                     .toggleStyle(.switch)
                                     .disabled(!enhancementService.isEnhancementEnabled)
-                                Text("Use text from clipboard to understand the context")
+                                Text("クリップボードのテキストを使用してコンテキストを理解")
                                     .font(.caption)
                                     .foregroundColor(enhancementService.isEnhancementEnabled ? .secondary : .secondary.opacity(0.5))
                             }
-                            
+
                             VStack(alignment: .leading, spacing: 4) {
-                                Toggle("Context Awareness", isOn: $enhancementService.useScreenCaptureContext)
+                                Toggle("コンテキスト認識", isOn: $enhancementService.useScreenCaptureContext)
                                     .toggleStyle(.switch)
                                     .disabled(!enhancementService.isEnhancementEnabled)
-                                Text("Learn what is on the screen to understand the context")
+                                Text("画面上の内容を学習してコンテキストを理解")
                                     .font(.caption)
                                     .foregroundColor(enhancementService.isEnhancementEnabled ? .secondary : .secondary.opacity(0.5))
                             }
@@ -65,17 +65,17 @@ struct EnhancementSettingsView: View {
                     
                     // 1. AI Provider Integration Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("AI Provider Integration")
+                        Text("AIプロバイダー統合")
                             .font(.headline)
-                        
+
                         APIKeyManagementView()
                     }
                     .padding()
                     .background(CardBackground(isSelected: false))
-                    
+
                     // 3. Enhancement Modes & Assistant Section
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Enhancement Prompt")
+                        Text("機能強化プロンプト")
                             .font(.headline)
                         
                         // Reorderable prompts grid with drag-and-drop

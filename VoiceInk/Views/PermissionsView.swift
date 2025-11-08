@@ -212,9 +212,9 @@ struct PermissionsView: View {
                             .shadow(color: .black.opacity(0.1), radius: 10, y: 5))
                     
                     VStack(spacing: 8) {
-                        Text("App Permissions")
+                        Text("アプリの権限")
                             .font(.system(size: 28, weight: .bold))
-                        Text("VoiceInk requires the following permissions to function properly")
+                        Text("VoiceInkが正常に機能するには、以下の権限が必要です")
                             .font(.system(size: 15))
                             .foregroundStyle(.secondary)
                     }
@@ -227,15 +227,15 @@ struct PermissionsView: View {
                     // Keyboard Shortcut Permission
                     PermissionCard(
                         icon: "keyboard",
-                        title: "Keyboard Shortcut",
-                        description: "Set up a keyboard shortcut to use VoiceInk anywhere",
+                        title: "キーボードショートカット",
+                        description: "どこからでもVoiceInkを使用するためのキーボードショートカットを設定",
                         isGranted: hotkeyManager.selectedHotkey1 != .none,
-                        buttonTitle: "Configure Shortcut",
+                        buttonTitle: "ショートカットを設定",
                         buttonAction: {
                             NotificationCenter.default.post(
                                 name: .navigateToDestination,
                                 object: nil,
-                                userInfo: ["destination": "Settings"]
+                                userInfo: ["destination": "設定"]
                             )
                         },
                         checkPermission: { permissionManager.checkKeyboardShortcut() }
@@ -244,10 +244,10 @@ struct PermissionsView: View {
                     // Audio Permission
                     PermissionCard(
                         icon: "mic",
-                        title: "Microphone Access",
-                        description: "Allow VoiceInk to record your voice for transcription",
+                        title: "マイクへのアクセス",
+                        description: "VoiceInkが文字起こしのために音声を録音できるようにする",
                         isGranted: permissionManager.audioPermissionStatus == .authorized,
-                        buttonTitle: permissionManager.audioPermissionStatus == .notDetermined ? "Request Permission" : "Open System Settings",
+                        buttonTitle: permissionManager.audioPermissionStatus == .notDetermined ? "権限をリクエスト" : "システム設定を開く",
                         buttonAction: {
                             if permissionManager.audioPermissionStatus == .notDetermined {
                                 permissionManager.requestAudioPermission()
@@ -263,27 +263,27 @@ struct PermissionsView: View {
                     // Accessibility Permission
                     PermissionCard(
                         icon: "hand.raised",
-                        title: "Accessibility Access",
-                        description: "Allow VoiceInk to paste transcribed text directly at your cursor position",
+                        title: "アクセシビリティへのアクセス",
+                        description: "VoiceInkがカーソル位置に文字起こしテキストを直接貼り付けられるようにする",
                         isGranted: permissionManager.isAccessibilityEnabled,
-                        buttonTitle: "Open System Settings",
+                        buttonTitle: "システム設定を開く",
                         buttonAction: {
                             if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
                                 NSWorkspace.shared.open(url)
                             }
                         },
                         checkPermission: { permissionManager.checkAccessibilityPermissions() },
-                        infoTipTitle: "Accessibility Access",
-                        infoTipMessage: "VoiceInk uses Accessibility permissions to paste the transcribed text directly into other applications at your cursor's position. This allows for a seamless dictation experience across your Mac."
+                        infoTipTitle: "アクセシビリティへのアクセス",
+                        infoTipMessage: "VoiceInkはアクセシビリティ権限を使用して、カーソルの位置に文字起こしテキストを他のアプリケーションに直接貼り付けます。これにより、Mac全体でシームレスな音声入力体験が可能になります。"
                     )
                     
                     // Screen Recording Permission
                     PermissionCard(
                         icon: "rectangle.on.rectangle",
-                        title: "Screen Recording Access",
-                        description: "Allow VoiceInk to understand context from your screen for transcript Enhancement",
+                        title: "画面収録へのアクセス",
+                        description: "VoiceInkが画面からコンテキストを理解して文字起こしを強化できるようにする",
                         isGranted: permissionManager.isScreenRecordingEnabled,
-                        buttonTitle: "Request Permission",
+                        buttonTitle: "権限をリクエスト",
                         buttonAction: {
                             permissionManager.requestScreenRecordingPermission()
                             // After requesting, open system preferences as fallback
@@ -292,8 +292,8 @@ struct PermissionsView: View {
                             }
                         },
                         checkPermission: { permissionManager.checkScreenRecordingPermission() },
-                        infoTipTitle: "Screen Recording Access",
-                        infoTipMessage: "VoiceInk captures on-screen text to understand the context of your voice input, which significantly improves transcription accuracy. Your privacy is important: this data is processed locally and is not stored.",
+                        infoTipTitle: "画面収録へのアクセス",
+                        infoTipMessage: "VoiceInkは画面上のテキストをキャプチャして音声入力のコンテキストを理解し、文字起こしの精度を大幅に向上させます。プライバシーは重要です：このデータはローカルで処理され、保存されません。",
                         infoTipLink: "https://tryvoiceink.com/docs/contextual-awareness"
                     )
                 }
