@@ -31,21 +31,21 @@ struct MenuBarView: View {
                 }
                 
                 Divider()
-                
-                Button("Manage Models") {
-                    menuBarManager.openMainWindowAndNavigate(to: "AI Models")
+
+                Button("モデルを管理") {
+                    menuBarManager.openMainWindowAndNavigate(to: "AIモデル")
                 }
             } label: {
                 HStack {
-                    Text("Transcription Model: \(whisperState.currentTranscriptionModel?.displayName ?? "None")")
+                    Text("文字起こしモデル: \(whisperState.currentTranscriptionModel?.displayName ?? "なし")")
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 10))
                 }
             }
             
             Divider()
-            
-            Toggle("AI Enhancement", isOn: $enhancementService.isEnhancementEnabled)
+
+            Toggle("AI機能強化", isOn: $enhancementService.isEnhancementEnabled)
             
             Menu {
                 ForEach(enhancementService.allPrompts) { prompt in
@@ -65,7 +65,7 @@ struct MenuBarView: View {
                 }
             } label: {
                 HStack {
-                    Text("Prompt: \(enhancementService.activePrompt?.title ?? "None")")
+                    Text("プロンプト: \(enhancementService.activePrompt?.title ?? "なし")")
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 10))
                 }
@@ -87,18 +87,18 @@ struct MenuBarView: View {
                 }
                 
                 if aiService.connectedProviders.isEmpty {
-                    Text("No providers connected")
+                    Text("プロバイダーが接続されていません")
                         .foregroundColor(.secondary)
                 }
-                
+
                 Divider()
-                
-                Button("Manage AI Providers") {
-                    menuBarManager.openMainWindowAndNavigate(to: "Enhancement")
+
+                Button("AIプロバイダーを管理") {
+                    menuBarManager.openMainWindowAndNavigate(to: "機能強化")
                 }
             } label: {
                 HStack {
-                    Text("AI Provider: \(aiService.selectedProvider.rawValue)")
+                    Text("AIプロバイダー: \(aiService.selectedProvider.rawValue)")
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 10))
                 }
@@ -120,18 +120,18 @@ struct MenuBarView: View {
                 }
                 
                 if aiService.availableModels.isEmpty {
-                    Text("No models available")
+                    Text("利用可能なモデルがありません")
                         .foregroundColor(.secondary)
                 }
-                
+
                 Divider()
-                
-                Button("Manage AI Models") {
-                    menuBarManager.openMainWindowAndNavigate(to: "Enhancement")
+
+                Button("AIモデルを管理") {
+                    menuBarManager.openMainWindowAndNavigate(to: "機能強化")
                 }
             } label: {
                 HStack {
-                    Text("AI Model: \(aiService.currentModel)")
+                    Text("AIモデル: \(aiService.currentModel)")
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 10))
                 }
@@ -139,14 +139,14 @@ struct MenuBarView: View {
             .disabled(!enhancementService.isEnhancementEnabled)
             
             LanguageSelectionView(whisperState: whisperState, displayMode: .menuItem, whisperPrompt: whisperState.whisperPrompt)
-            
-            Menu("Additional") {
+
+            Menu("追加機能") {
                 Button {
                     enhancementService.useClipboardContext.toggle()
                     menuRefreshTrigger.toggle()
                 } label: {
                     HStack {
-                        Text("Clipboard Context")
+                        Text("クリップボードコンテキスト")
                         Spacer()
                         if enhancementService.useClipboardContext {
                             Image(systemName: "checkmark")
@@ -154,13 +154,13 @@ struct MenuBarView: View {
                     }
                 }
                 .disabled(!enhancementService.isEnhancementEnabled)
-                
+
                 Button {
                     enhancementService.useScreenCaptureContext.toggle()
                     menuRefreshTrigger.toggle()
                 } label: {
                     HStack {
-                        Text("Context Awareness")
+                        Text("コンテキスト認識")
                         Spacer()
                         if enhancementService.useScreenCaptureContext {
                             Image(systemName: "checkmark")
@@ -172,50 +172,50 @@ struct MenuBarView: View {
             .id("additional-menu-\(menuRefreshTrigger)")
             
             Divider()
-            
-            Button("Retry Last Transcription") {
+
+            Button("最後の文字起こしを再試行") {
                 LastTranscriptionService.retryLastTranscription(from: whisperState.modelContext, whisperState: whisperState)
             }
-            
-            Button("Copy Last Transcription") {
+
+            Button("最後の文字起こしをコピー") {
                 LastTranscriptionService.copyLastTranscription(from: whisperState.modelContext)
             }
             .keyboardShortcut("c", modifiers: [.command, .shift])
-            
-            Button("History") {
-                menuBarManager.openMainWindowAndNavigate(to: "History")
+
+            Button("履歴") {
+                menuBarManager.openMainWindowAndNavigate(to: "履歴")
             }
             .keyboardShortcut("h", modifiers: [.command, .shift])
-            
-            Button("Settings") {
-                menuBarManager.openMainWindowAndNavigate(to: "Settings")
+
+            Button("設定") {
+                menuBarManager.openMainWindowAndNavigate(to: "設定")
             }
             .keyboardShortcut(",", modifiers: .command)
-            
-            Button(menuBarManager.isMenuBarOnly ? "Show Dock Icon" : "Hide Dock Icon") {
+
+            Button(menuBarManager.isMenuBarOnly ? "Dockアイコンを表示" : "Dockアイコンを非表示") {
                 menuBarManager.toggleMenuBarOnly()
             }
             .keyboardShortcut("d", modifiers: [.command, .shift])
-            
-            Toggle("Launch at Login", isOn: $launchAtLoginEnabled)
+
+            Toggle("ログイン時に起動", isOn: $launchAtLoginEnabled)
                 .onChange(of: launchAtLoginEnabled) { oldValue, newValue in
                     LaunchAtLogin.isEnabled = newValue
                 }
-            
+
             Divider()
-            
-            Button("Check for Updates") {
+
+            Button("アップデートを確認") {
                 updaterViewModel.checkForUpdates()
             }
             .disabled(!updaterViewModel.canCheckForUpdates)
-            
-            Button("Help and Support") {
+
+            Button("ヘルプとサポート") {
                 EmailSupport.openSupportEmail()
             }
-            
+
             Divider()
-            
-            Button("Quit VoiceInk") {
+
+            Button("VoiceInkを終了") {
                 NSApplication.shared.terminate(nil)
             }
         }

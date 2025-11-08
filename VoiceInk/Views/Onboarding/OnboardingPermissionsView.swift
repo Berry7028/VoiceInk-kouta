@@ -42,32 +42,32 @@ struct OnboardingPermissionsView: View {
     
     private let permissions: [OnboardingPermission] = [
         OnboardingPermission(
-            title: "Microphone Access",
-            description: "Enable your microphone to start speaking and converting your voice to text instantly.",
+            title: "マイクへのアクセス",
+            description: "マイクを有効にして、音声を即座にテキストに変換します。",
             icon: "waveform",
             type: .microphone
         ),
         OnboardingPermission(
-            title: "Microphone Selection",
-            description: "Select the audio input device you want to use with VoiceInk.",
+            title: "マイクの選択",
+            description: "VoiceInkで使用する音声入力デバイスを選択します。",
             icon: "headphones",
             type: .audioDeviceSelection
         ),
         OnboardingPermission(
-            title: "Accessibility Access",
-            description: "Allow VoiceInk to help you type anywhere in your Mac.",
+            title: "アクセシビリティへのアクセス",
+            description: "VoiceInkがMacのどこでもタイピングを支援できるようにします。",
             icon: "accessibility",
             type: .accessibility
         ),
         OnboardingPermission(
-            title: "Screen Recording",
-            description: "This helps to improve the accuracy of transcription.",
+            title: "画面収録",
+            description: "文字起こしの精度を向上させるのに役立ちます。",
             icon: "rectangle.inset.filled.and.person.filled",
             type: .screenRecording
         ),
         OnboardingPermission(
-            title: "Keyboard Shortcut",
-            description: "Set up a keyboard shortcut to quickly access VoiceInk from anywhere.",
+            title: "キーボードショートカット",
+            description: "どこからでも素早くVoiceInkにアクセスするためのキーボードショートカットを設定します。",
             icon: "keyboard",
             type: .keyboardShortcut
         )
@@ -125,8 +125,8 @@ struct OnboardingPermissionsView: View {
                                     
                                     if permissions[currentPermissionIndex].type == .screenRecording {
                                         InfoTip(
-                                            title: "Screen Recording Access",
-                                            message: "VoiceInk captures on-screen text to understand the context of your voice input, which significantly improves transcription accuracy. Your privacy is important: this data is processed locally and is not stored.",
+                                            title: "画面収録へのアクセス",
+                                            message: "VoiceInkは画面上のテキストをキャプチャして音声入力のコンテキストを理解し、文字起こしの精度を大幅に向上させます。プライバシーは重要です：このデータはローカルで処理され、保存されません。",
                                             learnMoreURL: "https://tryvoiceink.com/docs/contextual-awareness"
                                         )
                                     }
@@ -150,8 +150,8 @@ struct OnboardingPermissionsView: View {
                                                 .font(.system(size: 36))
                                                 .symbolRenderingMode(.hierarchical)
                                                 .foregroundStyle(.secondary)
-                                            
-                                            Text("No microphones found")
+
+                                            Text("マイクが見つかりません")
                                                 .font(.subheadline)
                                                 .foregroundStyle(.secondary)
                                         }
@@ -194,7 +194,7 @@ struct OnboardingPermissionsView: View {
                                         }
                                     }
                                     
-                                    Text("For best results, using your Mac's built-in microphone is recommended.")
+                                    Text("最良の結果を得るには、Macの内蔵マイクの使用をお勧めします。")
                                         .font(.caption)
                                         .foregroundColor(.white.opacity(0.7))
                                         .multilineTextAlignment(.center)
@@ -234,10 +234,10 @@ struct OnboardingPermissionsView: View {
                             }
                             .buttonStyle(ScaleButtonStyle())
                             
-                            if !permissionStates[currentPermissionIndex] && 
+                            if !permissionStates[currentPermissionIndex] &&
                                permissions[currentPermissionIndex].type != .keyboardShortcut &&
                                permissions[currentPermissionIndex].type != .audioDeviceSelection {
-                                SkipButton(text: "Skip for now") {
+                                SkipButton(text: "今はスキップ") {
                                     moveToNext()
                                 }
                             }
@@ -401,11 +401,11 @@ struct OnboardingPermissionsView: View {
     private func getButtonTitle() -> String {
         switch permissions[currentPermissionIndex].type {
         case .keyboardShortcut:
-            return permissionStates[currentPermissionIndex] ? "Continue" : "Set Shortcut"
+            return permissionStates[currentPermissionIndex] ? "続ける" : "ショートカットを設定"
         case .audioDeviceSelection:
-            return "Continue"
+            return "続ける"
         default:
-            return permissionStates[currentPermissionIndex] ? "Continue" : "Enable Access"
+            return permissionStates[currentPermissionIndex] ? "続ける" : "アクセスを有効化"
         }
     }
 

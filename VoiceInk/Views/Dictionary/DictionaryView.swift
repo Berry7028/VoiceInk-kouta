@@ -113,7 +113,7 @@ struct DictionaryView: View {
         VStack(alignment: .leading, spacing: 20) {
             GroupBox {
                 Label {
-                    Text("Add words to help VoiceInk recognize them properly. (Requires AI enhancement)")
+                    Text("VoiceInkが単語を正しく認識できるように、単語を追加してください。（AI機能強化が必要です）")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -124,7 +124,7 @@ struct DictionaryView: View {
             }
 
             HStack(spacing: 8) {
-                TextField("Add word to dictionary", text: $newWord)
+                TextField("辞書に単語を追加", text: $newWord)
                     .textFieldStyle(.roundedBorder)
                     .font(.system(size: 13))
                     .onSubmit { addWords() }
@@ -137,14 +137,14 @@ struct DictionaryView: View {
                 }
                 .buttonStyle(.borderless)
                 .disabled(newWord.isEmpty)
-                .help("Add word")
+                .help("単語を追加")
             }
 
             if !dictionaryManager.items.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
                     Button(action: toggleSort) {
                         HStack(spacing: 4) {
-                            Text("Dictionary Items (\(dictionaryManager.items.count))")
+                            Text("辞書項目 (\(dictionaryManager.items.count))")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.secondary)
 
@@ -154,7 +154,7 @@ struct DictionaryView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .help("Sort alphabetically")
+                    .help("アルファベット順に並べ替え")
 
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: .infinity), spacing: 12)], alignment: .leading, spacing: 12) {
@@ -172,7 +172,7 @@ struct DictionaryView: View {
             }
         }
         .padding()
-        .alert("Dictionary", isPresented: $showAlert) {
+        .alert("辞書", isPresented: $showAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(alertMessage)
