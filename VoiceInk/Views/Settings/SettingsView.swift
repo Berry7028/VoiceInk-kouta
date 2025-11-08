@@ -5,7 +5,6 @@ import LaunchAtLogin
 import AVFoundation
 
 struct SettingsView: View {
-    @EnvironmentObject private var updaterViewModel: UpdaterViewModel
     @EnvironmentObject private var menuBarManager: MenuBarManager
     @EnvironmentObject private var hotkeyManager: HotkeyManager
     @EnvironmentObject private var whisperState: WhisperState
@@ -14,7 +13,6 @@ struct SettingsView: View {
     @ObservedObject private var mediaController = MediaController.shared
     @ObservedObject private var playbackController = PlaybackController.shared
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
-    @AppStorage("autoUpdateCheck") private var autoUpdateCheck = true
     @AppStorage("enableAnnouncements") private var enableAnnouncements = true
     @State private var showResetOnboardingAlert = false
     @State private var currentShortcut = KeyboardShortcuts.getShortcut(for: .toggleMiniRecorder)
@@ -285,7 +283,7 @@ struct SettingsView: View {
                 SettingsSection(
                     icon: "gear",
                     title: "General",
-                    subtitle: "Appearance, startup, and updates"
+                    subtitle: "Appearance and startup"
                 ) {
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle("Hide Dock Icon (Menu Bar Only)", isOn: $menuBarManager.isMenuBarOnly)
@@ -294,12 +292,6 @@ struct SettingsView: View {
                         LaunchAtLogin.Toggle()
                             .toggleStyle(.switch)
 
-                        Toggle("Enable automatic update checks", isOn: $autoUpdateCheck)
-                            .toggleStyle(.switch)
-                            .onChange(of: autoUpdateCheck) { _, newValue in
-                                updaterViewModel.toggleAutoUpdates(newValue)
-                            }
-                        
                         Toggle("Show app announcements", isOn: $enableAnnouncements)
                             .toggleStyle(.switch)
                             .onChange(of: enableAnnouncements) { _, newValue in
@@ -309,14 +301,7 @@ struct SettingsView: View {
                                     AnnouncementsService.shared.stop()
                                 }
                             }
-                        
-                        Button("Check for Updates Now") {
-                            updaterViewModel.checkForUpdates()
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.large)
-                        .disabled(!updaterViewModel.canCheckForUpdates)
-                        
+
                         Divider()
 
                         Button("Reset Onboarding") {
