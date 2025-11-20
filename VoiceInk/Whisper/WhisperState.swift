@@ -148,6 +148,12 @@ class WhisperState: NSObject, ObservableObject {
     
     func toggleRecord() async {
         if recordingState == .recording {
+            // Finalize realtime transcription if active
+            var realtimeText = ""
+            if isRealtimeTranscribing {
+                realtimeText = await finalizeRealtimeTranscription()
+            }
+
             await recorder.stopRecording()
             if let recordedFile {
                 if !shouldCancelRecording {
@@ -155,16 +161,19 @@ class WhisperState: NSObject, ObservableObject {
                     let duration = (try? CMTimeGetSeconds(await audioAsset.load(.duration))) ?? 0.0
 
                     let transcription = Transcription(
-                        text: "",
+                        text: realtimeText,  // Use realtime text if available
                         duration: duration,
                         audioFileURL: recordedFile.absoluteString,
-                        transcriptionStatus: .pending
+                        transcriptionStatus: realtimeText.isEmpty ? .pending : .completed
                     )
                     modelContext.insert(transcription)
                     try? modelContext.save()
                     NotificationCenter.default.post(name: .transcriptionCreated, object: transcription)
 
-                    await transcribeAudio(on: transcription)
+                    // Only transcribe if we don't have realtime text
+                    if realtimeText.isEmpty {
+                        await transcribeAudio(on: transcription)
+                    }
                 } else {
                     await MainActor.run {
                         recordingState = .idle
@@ -196,13 +205,21 @@ class WhisperState: NSObject, ObservableObject {
                             let fileName = "\(UUID().uuidString).wav"
                             let permanentURL = self.recordingsDirectory.appendingPathComponent(fileName)
                             self.recordedFile = permanentURL
-        
-                            try await self.recorder.startRecording(toOutputFile: permanentURL)
-                            
+
+                            // Check if current model is ElevenLabs Scribe v2 Realtime for realtime streaming
+                            let enableRealtimeStreaming = self.isRealtimeTranscriptionModel()
+                            try await self.recorder.startRecording(toOutputFile: permanentURL, enableRealtimeStreaming: enableRealtimeStreaming)
+
                             await MainActor.run {
                                 self.recordingState = .recording
                             }
-                            
+
+                            // Setup realtime transcription if enabled
+                            if enableRealtimeStreaming {
+                                await self.setupRealtimeTranscription()
+                                await self.startRealtimeAudioStreaming()
+                            }
+
                             await ActiveWindowService.shared.applyConfigurationForCurrentApp()
          
                             // Only load model if it's a local model and not already loaded
@@ -241,6 +258,11 @@ class WhisperState: NSObject, ObservableObject {
     
     private func requestRecordPermission(response: @escaping (Bool) -> Void) {
         response(true)
+    }
+
+    private func isRealtimeTranscriptionModel() -> Bool {
+        guard let model = currentTranscriptionModel as? CloudModel else { return false }
+        return model.provider == .elevenLabs && model.name.contains("scribe_v2_realtime")
     }
     
     private func transcribeAudio(on transcription: Transcription) async {

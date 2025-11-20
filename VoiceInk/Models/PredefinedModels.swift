@@ -214,9 +214,9 @@ import Foundation
            supportedLanguages: getLanguageDictionary(isMultilingual: true, provider: .elevenLabs)
        ),
        CloudModel(
-           name: "scribe_v2",
+           name: "scribe_v2_realtime",
            displayName: "Scribe v2 (ElevenLabs)",
-           description: "ElevenLabs' most accurate Scribe model for precise transcription.",
+           description: "ElevenLabs' most accurate Scribe model for precise transcription with realtime streaming.",
            provider: .elevenLabs,
            speed: 0.75,
            accuracy: 0.99,
