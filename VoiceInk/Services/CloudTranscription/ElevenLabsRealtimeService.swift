@@ -3,7 +3,7 @@ import os.log
 import AVFoundation
 
 /// ElevenLabs Scribe v2 Realtime WebSocket通信サービス
-actor ElevenLabsRealtimeService {
+class ElevenLabsRealtimeService: @unchecked Sendable {
     private let logger = Logger(subsystem: "com.example.VoiceInk", category: "ElevenLabsRealtimeService")
 
     private var webSocket: URLSessionWebSocketTask?
@@ -31,7 +31,7 @@ actor ElevenLabsRealtimeService {
         guard let url = URL(string: "wss://api.elevenlabs.io/v1/speech-to-text/realtime?\(queryParams)") else {
             let error = "Invalid WebSocket URL"
             logger.error("Error: \(error)")
-            onError?(error)
+            await onError?(error)
             throw NSError(domain: "ElevenLabsRealtimeService", code: -1, userInfo: [NSLocalizedDescriptionKey: error])
         }
 
@@ -141,18 +141,18 @@ actor ElevenLabsRealtimeService {
                 isConnected = false
 
                 // 再接続ロジック
-                if reconnectAttempts < maxReconnectAttempts {
-                    reconnectAttempts += 1
-                    let delay = UInt64(pow(2.0, Double(reconnectAttempts - 1))) * 1_000_000_000 // exponential backoff
+                if self.reconnectAttempts < self.maxReconnectAttempts {
+                    self.reconnectAttempts += 1
+                    let delay = UInt64(pow(2.0, Double(self.reconnectAttempts - 1))) * 1_000_000_000 // exponential backoff
                     try? await Task.sleep(nanoseconds: delay)
 
-                    logger.info("Attempting to reconnect... (attempt \(reconnectAttempts)/\(maxReconnectAttempts))")
+                    self.logger.info("Attempting to reconnect... (attempt \(self.reconnectAttempts)/\(self.maxReconnectAttempts))")
                     // 再接続は呼び出し側で処理
                     break
                 } else {
-                    let errorMsg = "Failed to maintain WebSocket connection after \(maxReconnectAttempts) attempts"
-                    logger.error("Error: \(errorMsg)")
-                    onError?(errorMsg)
+                    let errorMsg = "Failed to maintain WebSocket connection after \(self.maxReconnectAttempts) attempts"
+                    self.logger.error("Error: \(errorMsg)")
+                    await self.onError?(errorMsg)
                     break
                 }
             }
