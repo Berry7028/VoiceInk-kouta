@@ -28,6 +28,12 @@ class WhisperState: NSObject, ObservableObject {
     @Published var miniRecorderError: String?
     @Published var shouldCancelRecording = false
 
+    // Realtime transcription support
+    @Published var isRealtimeTranscribing = false
+    @Published var realtimeTranscripts: [RealtimeTranscriptMessage] = []
+    private var realtimeService: ElevenLabsRealtimeService?
+    private var committedTextBuffer: [String] = []
+
 
     @Published var recorderType: String = UserDefaults.standard.string(forKey: "RecorderType") ?? "mini" {
         didSet {

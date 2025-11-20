@@ -57,15 +57,35 @@ struct NotchRecorderView: View {
             .contentShape(Rectangle())
     }
     
+    private var realtimeTextDisplay: some View {
+        let latestCommittedText = whisperState.realtimeTranscripts
+            .filter { !$0.isPartial }
+            .last?.text ?? ""
+
+        return Text(latestCommittedText)
+            .font(.system(size: 11, weight: .regular))
+            .lineLimit(1)
+            .truncationMode(.tail)
+            .foregroundColor(.white)
+            .opacity(0.8)
+    }
+
     private var rightSection: some View {
         HStack(spacing: 8) {
+            // Show realtime text if available
+            if whisperState.isRealtimeTranscribing && !whisperState.realtimeTranscripts.isEmpty {
+                realtimeTextDisplay
+                    .frame(maxWidth: 150)
+                    .transition(.opacity)
+            }
+
             Spacer()
             statusDisplay
         }
         .frame(width: 64)
         .padding(.trailing, 16)
     }
-    
+
     private var statusDisplay: some View {
         RecorderStatusDisplay(
             currentState: whisperState.recordingState,

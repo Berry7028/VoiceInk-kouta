@@ -33,24 +33,37 @@ struct MiniRecorderView: View {
     }
     
     private var contentLayout: some View {
-        HStack(spacing: 0) {
-            // Left button zone - always visible
-            RecorderPromptButton(activePopover: $activePopover)
-                .padding(.leading, 7)
+        VStack(spacing: 0) {
+            // Main recorder controls
+            HStack(spacing: 0) {
+                // Left button zone - always visible
+                RecorderPromptButton(activePopover: $activePopover)
+                    .padding(.leading, 7)
 
-            Spacer()
+                Spacer()
 
-            // Fixed visualizer zone
-            statusView
-                .frame(maxWidth: .infinity)
+                // Fixed visualizer zone
+                statusView
+                    .frame(maxWidth: .infinity)
 
-            Spacer()
+                Spacer()
 
-            // Right button zone - always visible
-            RecorderPowerModeButton(activePopover: $activePopover)
-                .padding(.trailing, 7)
+                // Right button zone - always visible
+                RecorderPowerModeButton(activePopover: $activePopover)
+                    .padding(.trailing, 7)
+            }
+            .padding(.vertical, 9)
+
+            // Realtime transcript display
+            if whisperState.isRealtimeTranscribing && !whisperState.realtimeTranscripts.isEmpty {
+                Divider()
+                    .padding(.horizontal, 8)
+
+                RealtimeTranscriptView(transcripts: whisperState.realtimeTranscripts)
+                    .padding(8)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
         }
-        .padding(.vertical, 9)
     }
     
     private var recorderCapsule: some View {
