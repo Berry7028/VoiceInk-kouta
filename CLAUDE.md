@@ -916,7 +916,7 @@ All dependencies are managed via **Swift Package Manager** (SPM):
 
 **External Framework**:
 - **whisper.cpp**: Built separately, linked as XCFramework
-  - Location: `~/VoiceInk-Dependencies/whisper.cpp/build-apple/whisper.xcframework`
+  - Location: `../whisper.cpp/build-apple/whisper.xcframework` (sibling directory to project)
   - Built via: `make whisper`
 
 ### App Entitlements

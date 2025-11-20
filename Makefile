@@ -1,7 +1,7 @@
 # Define a directory for dependencies relative to the project
 # This ensures compatibility with Xcode project references
-DEPS_DIR := $(shell dirname $(shell pwd))/VoiceInk-Dependencies
-WHISPER_CPP_DIR := $(DEPS_DIR)/whisper.cpp
+# Xcode project expects whisper.cpp to be a sibling directory
+WHISPER_CPP_DIR := $(shell dirname $(shell pwd))/whisper.cpp
 FRAMEWORK_PATH := $(WHISPER_CPP_DIR)/build-apple/whisper.xcframework
 
 .PHONY: all clean whisper setup build check healthcheck help dev run
@@ -24,9 +24,8 @@ healthcheck: check
 
 # Build process
 whisper:
-	@mkdir -p $(DEPS_DIR)
 	@if [ ! -d "$(FRAMEWORK_PATH)" ]; then \
-		echo "Building whisper.xcframework in $(DEPS_DIR)..."; \
+		echo "Building whisper.xcframework..."; \
 		if [ ! -d "$(WHISPER_CPP_DIR)" ]; then \
 			git clone https://github.com/ggerganov/whisper.cpp.git $(WHISPER_CPP_DIR); \
 		else \
@@ -34,7 +33,7 @@ whisper:
 		fi; \
 		cd $(WHISPER_CPP_DIR) && ./build-xcframework.sh; \
 	else \
-		echo "whisper.xcframework already built in $(DEPS_DIR), skipping build"; \
+		echo "whisper.xcframework already built, skipping build"; \
 	fi
 
 setup: whisper
@@ -58,7 +57,7 @@ run:
 # Cleanup
 clean:
 	@echo "Cleaning build artifacts..."
-	@rm -rf $(DEPS_DIR)
+	@rm -rf $(WHISPER_CPP_DIR)
 	@echo "Clean complete"
 
 # Help
