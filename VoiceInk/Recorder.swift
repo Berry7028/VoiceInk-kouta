@@ -169,7 +169,8 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         self.inputNode = inputNode
 
         // Get the input format from the input node
-        guard let inputFormat = inputNode.outputFormat(forBus: 0) else {
+        let inputFormat = inputNode.outputFormat(forBus: 0)
+        guard inputFormat != nil else {
             logger.error("❌ Failed to get input audio format")
             return
         }
