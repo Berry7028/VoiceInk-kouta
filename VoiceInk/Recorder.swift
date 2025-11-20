@@ -168,21 +168,20 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         let inputNode = audioEngine!.inputNode
         self.inputNode = inputNode
 
-        let inputFormat = inputNode.outputFormat(forBus: 0)!
-
-        let chunkerFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000, channels: 1, interleaved: false)!
-
-        audioEngine?.attach(AVAudioUnitVarispeed(audioComponentDescription: AudioComponentDescription(
-            componentType: kAudioUnitType_FormatConverter,
-            componentSubType: kAudioUnitSubType_AUConverter,
-            componentManufacturer: kAudioUnitManufacture_Apple,
-            componentFlags: 0,
-            componentFlagsMask: 0
-        )))
-
-        inputNode.installTap(onBus: 0, bufferSize: 16000, format: inputFormat) { [weak self] buffer, _ in
-            self?.processAudioBuffer(buffer, targetFormat: chunkerFormat)
+        // Get the input format from the input node
+        guard let inputFormat = inputNode.outputFormat(forBus: 0) else {
+            logger.error("❌ Failed to get input audio format")
+            return
         }
+
+        // Create target format: 16kHz, PCM, 1 channel
+        let targetFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000, channels: 1, interleaved: false)
+
+        inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat) { [weak self] buffer, _ in
+            self?.processAudioBuffer(buffer, targetFormat: targetFormat)
+        }
+
+        audioEngine?.connect(inputNode, to: audioEngine!.mainMixerNode, format: inputFormat)
 
         do {
             try audioEngine?.start()
@@ -192,27 +191,42 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
-    private func processAudioBuffer(_ buffer: AVAudioPCMBuffer, targetFormat: AVAudioFormat) {
-        guard let pcmBuffer = buffer as? AVAudioPCMBuffer else { return }
+    private func processAudioBuffer(_ buffer: AVAudioPCMBuffer, targetFormat: AVAudioFormat?) {
+        guard let targetFormat = targetFormat else { return }
 
-        let audioBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: buffer.frameLength)!
-
-        do {
-            let converter = AVAudioConverter(from: buffer.format, to: targetFormat)!
-            var error: NSError?
-            _ = converter.convert(to: audioBuffer, error: &error)
-
-            if let error = error {
-                logger.error("❌ Audio conversion error: \(error.localizedDescription)")
-                return
+        // If formats match, use buffer directly
+        if buffer.format == targetFormat {
+            if let int16Data = buffer.int16ChannelData {
+                let dataBytes = Data(bytes: int16Data.pointee, count: Int(buffer.frameLength) * 2)
+                onAudioChunk?(dataBytes)
             }
+            return
+        }
 
-            let audioData = audioBuffer.int16ChannelData!.pointee
-            let dataBytes = Data(bytes: audioData, count: Int(audioBuffer.frameLength) * 2)
+        // Convert format if needed
+        guard let audioBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: buffer.frameLength) else {
+            logger.error("❌ Failed to create audio buffer")
+            return
+        }
 
+        let converter = AVAudioConverter(from: buffer.format, to: targetFormat)
+        var error: NSError?
+
+        let inputBlock: AVAudioConverterInputBlock = { inNumPackets, outStatus in
+            outStatus.pointee = .haveData
+            return buffer
+        }
+
+        converter?.convert(to: audioBuffer, error: &error, withInputFrom: inputBlock)
+
+        if let error = error {
+            logger.error("❌ Audio conversion error: \(error.localizedDescription)")
+            return
+        }
+
+        if let int16Data = audioBuffer.int16ChannelData {
+            let dataBytes = Data(bytes: int16Data.pointee, count: Int(audioBuffer.frameLength) * 2)
             onAudioChunk?(dataBytes)
-        } catch {
-            logger.error("❌ Error processing audio buffer: \(error.localizedDescription)")
         }
     }
 
@@ -224,13 +238,9 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
             inputNode.removeTap(onBus: 0)
         }
 
-        do {
-            try audioEngine?.stop()
-            audioEngine = nil
-            logger.info("✅ Realtime audio streaming stopped")
-        } catch {
-            logger.error("❌ Error stopping audio engine: \(error.localizedDescription)")
-        }
+        audioEngine?.stop()
+        audioEngine = nil
+        logger.info("✅ Realtime audio streaming stopped")
     }
     
     func stopRecording() {
