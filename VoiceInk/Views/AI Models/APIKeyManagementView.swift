@@ -16,8 +16,9 @@ struct APIKeyManagementView: View {
         VStack(alignment: .leading, spacing: 16) {
             // Provider Selection
             HStack {
+                let validProviders = AIProvider.allCases.filter { $0 != .elevenLabs && $0 != .deepgram && $0 != .soniox }
                 Picker("AI Provider", selection: $aiService.selectedProvider) {
-                    ForEach(AIProvider.allCases.filter { $0 != .elevenLabs && $0 != .deepgram && $0 != .soniox }, id: \.self) { provider in
+                    ForEach(validProviders, id: \.self) { provider in
                         Text(provider.rawValue).tag(provider)
                     }
                 }
