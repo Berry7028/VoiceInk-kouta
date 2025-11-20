@@ -16,12 +16,6 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
     private var audioLevelCheckTask: Task<Void, Never>?
     private var audioMeterUpdateTask: Task<Void, Never>?
     private var hasDetectedAudioInCurrentSession = false
-
-    // Realtime streaming support
-    private var audioEngine: AVAudioEngine?
-    private var inputNode: AVAudioInputNode?
-    private var audioStreamTask: Task<Void, Never>?
-    var onAudioChunk: ((Data) -> Void)?
     
     enum RecorderError: Error {
         case couldNotStartRecording
@@ -63,12 +57,12 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         try AudioDeviceConfiguration.setDefaultInputDevice(deviceID)
     }
     
-    func startRecording(toOutputFile url: URL, enableRealtimeStreaming: Bool = false) async throws {
+    func startRecording(toOutputFile url: URL) async throws {
         deviceManager.isRecordingActive = true
-
+        
         let currentDeviceID = deviceManager.getCurrentDevice()
         let lastDeviceID = UserDefaults.standard.string(forKey: "lastUsedMicrophoneDeviceID")
-
+        
         if String(currentDeviceID) != lastDeviceID {
             if let deviceName = deviceManager.availableDevices.first(where: { $0.id == currentDeviceID })?.name {
                 await MainActor.run {
@@ -80,7 +74,7 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
             }
         }
         UserDefaults.standard.set(String(currentDeviceID), forKey: "lastUsedMicrophoneDeviceID")
-
+        
         hasDetectedAudioInCurrentSession = false
 
         let deviceID = deviceManager.getCurrentDevice()
@@ -91,7 +85,7 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
                 logger.warning("⚠️ Failed to configure audio session for device \(deviceID), attempting to continue: \(error.localizedDescription)")
             }
         }
-
+        
         let recordSettings: [String: Any] = [
             AVFormatIDKey: Int(kAudioFormatLinearPCM),
             AVSampleRateKey: 16000.0,
@@ -101,38 +95,33 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
             AVLinearPCMIsBigEndianKey: false,
             AVLinearPCMIsNonInterleaved: false
         ]
-
+        
         do {
             recorder = try AVAudioRecorder(url: url, settings: recordSettings)
             recorder?.delegate = self
             recorder?.isMeteringEnabled = true
-
+            
             if recorder?.record() == false {
                 logger.error("❌ Could not start recording")
                 throw RecorderError.couldNotStartRecording
             }
-
+            
             Task { [weak self] in
                 guard let self = self else { return }
                 await self.playbackController.pauseMedia()
                 _ = await self.mediaController.muteSystemAudio()
             }
-
-            // Realtime streaming setup
-            if enableRealtimeStreaming {
-                setupRealtimeStreaming()
-            }
-
+            
             audioLevelCheckTask?.cancel()
             audioMeterUpdateTask?.cancel()
-
+            
             audioMeterUpdateTask = Task {
                 while recorder != nil && !Task.isCancelled {
                     updateAudioMeter()
                     try? await Task.sleep(nanoseconds: 33_000_000)
                 }
             }
-
+            
             audioLevelCheckTask = Task {
                 let notificationChecks: [TimeInterval] = [5.0, 12.0]
 
@@ -153,94 +142,21 @@ class Recorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
                     }
                 }
             }
-
+            
         } catch {
             logger.error("Failed to create audio recorder: \(error.localizedDescription)")
             stopRecording()
             throw RecorderError.couldNotStartRecording
         }
     }
-
-    // MARK: - Realtime Streaming
-
-    private func setupRealtimeStreaming() {
-        audioEngine = AVAudioEngine()
-        let inputNode = audioEngine!.inputNode
-        self.inputNode = inputNode
-
-        let inputFormat = inputNode.outputFormat(forBus: 0)!
-
-        let chunkerFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000, channels: 1, interleaved: false)!
-
-        audioEngine?.attach(AVAudioUnitVarispeed(audioComponentDescription: AudioComponentDescription(
-            componentType: kAudioUnitType_FormatConverter,
-            componentSubType: kAudioUnitSubType_AUConverter,
-            componentManufacturer: kAudioUnitManufacture_Apple,
-            componentFlags: 0,
-            componentFlagsMask: 0
-        )))
-
-        inputNode.installTap(onBus: 0, bufferSize: 16000, format: inputFormat) { [weak self] buffer, _ in
-            self?.processAudioBuffer(buffer, targetFormat: chunkerFormat)
-        }
-
-        do {
-            try audioEngine?.start()
-            logger.info("✅ Realtime audio streaming started")
-        } catch {
-            logger.error("❌ Failed to start audio engine: \(error.localizedDescription)")
-        }
-    }
-
-    private func processAudioBuffer(_ buffer: AVAudioPCMBuffer, targetFormat: AVAudioFormat) {
-        guard let pcmBuffer = buffer as? AVAudioPCMBuffer else { return }
-
-        let audioBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: buffer.frameLength)!
-
-        do {
-            let converter = AVAudioConverter(from: buffer.format, to: targetFormat)!
-            var error: NSError?
-            _ = converter.convert(to: audioBuffer, error: &error)
-
-            if let error = error {
-                logger.error("❌ Audio conversion error: \(error.localizedDescription)")
-                return
-            }
-
-            let audioData = audioBuffer.int16ChannelData!.pointee
-            let dataBytes = Data(bytes: audioData, count: Int(audioBuffer.frameLength) * 2)
-
-            onAudioChunk?(dataBytes)
-        } catch {
-            logger.error("❌ Error processing audio buffer: \(error.localizedDescription)")
-        }
-    }
-
-    private func stopRealtimeStreaming() {
-        audioStreamTask?.cancel()
-        audioStreamTask = nil
-
-        if let inputNode = inputNode {
-            inputNode.removeTap(onBus: 0)
-        }
-
-        do {
-            try audioEngine?.stop()
-            audioEngine = nil
-            logger.info("✅ Realtime audio streaming stopped")
-        } catch {
-            logger.error("❌ Error stopping audio engine: \(error.localizedDescription)")
-        }
-    }
     
     func stopRecording() {
         audioLevelCheckTask?.cancel()
         audioMeterUpdateTask?.cancel()
-        stopRealtimeStreaming()
         recorder?.stop()
         recorder = nil
         audioMeter = AudioMeter(averagePower: 0, peakPower: 0)
-
+        
         Task {
             await mediaController.unmuteSystemAudio()
             try? await Task.sleep(nanoseconds: 100_000_000)
