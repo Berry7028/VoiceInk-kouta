@@ -214,6 +214,16 @@ import Foundation
            supportedLanguages: getLanguageDictionary(isMultilingual: true, provider: .elevenLabs)
        ),
        CloudModel(
+           name: "scribe_v2_realtime",
+           displayName: "Scribe v2 (ElevenLabs)",
+           description: "ElevenLabs' most accurate Scribe model for precise transcription.",
+           provider: .elevenLabs,
+           speed: 0.75,
+           accuracy: 0.99,
+           isMultilingual: true,
+           supportedLanguages: getLanguageDictionary(isMultilingual: true, provider: .elevenLabs)
+       ),
+       CloudModel(
            name: "nova-2",
            displayName: "Nova (Deepgram)",
            description: "Deepgram's Nova model for fast, accurate, and cost-effective transcription.",
