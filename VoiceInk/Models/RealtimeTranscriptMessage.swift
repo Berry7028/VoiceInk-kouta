@@ -1,7 +1,7 @@
 import Foundation
 
 /// リアルタイム文字起こしのメッセージを表すモデル
-struct RealtimeTranscriptMessage: Identifiable {
+struct RealtimeTranscriptMessage: Identifiable, Equatable {
     let id: UUID
     let text: String
     let isPartial: Bool  // true = 部分結果, false = 確定結果
@@ -12,5 +12,9 @@ struct RealtimeTranscriptMessage: Identifiable {
         self.text = text
         self.isPartial = isPartial
         self.timestamp = timestamp
+    }
+
+    static func == (lhs: RealtimeTranscriptMessage, rhs: RealtimeTranscriptMessage) -> Bool {
+        lhs.id == rhs.id && lhs.text == rhs.text && lhs.isPartial == rhs.isPartial
     }
 }
