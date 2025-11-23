@@ -135,6 +135,7 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
     private var committedTextStorage: String = ""
     private var partialTextStorage: String = ""
     private var _shouldStopStreaming: Bool = false
+    private var lastTranscriptUpdate: Date = Date()
 
     var onTextUpdate: ((String) -> Void)?
     var onConnectionStateChange: ((Bool) -> Void)?
@@ -199,7 +200,7 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
         streamingTask = nil
 
         await sendFinalCommit()
-        try? await Task.sleep(nanoseconds: 350_000_000)
+        await waitForTranscriptStability(idleTime: 0.35, timeout: 2.0)
 
         closeConnection()
         let text = finalTranscript()
@@ -378,6 +379,7 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
             DispatchQueue.main.async { [weak self] in
                 self?.onTextUpdate?(combined)
             }
+            self.markTranscriptUpdate()
         }
     }
 
@@ -390,6 +392,7 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
             DispatchQueue.main.async { [weak self] in
                 self?.onTextUpdate?(combined)
             }
+            self.markTranscriptUpdate()
         }
     }
 
@@ -449,6 +452,7 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
         audioFileURL = nil
         streamReadOffset = 0
         shouldStopStreaming = false
+        controlQueue.sync { lastTranscriptUpdate = Date() }
         if clearTranscripts {
             resetTranscriptStorage()
             DispatchQueue.main.async { [weak self] in
@@ -471,6 +475,25 @@ final class ElevenLabsRealtimeTranscriptionService: RealtimeTranscriptionService
     private var shouldStopStreaming: Bool {
         get { controlQueue.sync { _shouldStopStreaming } }
         set { controlQueue.sync { _shouldStopStreaming = newValue } }
+    }
+
+    private func markTranscriptUpdate() {
+        controlQueue.sync {
+            lastTranscriptUpdate = Date()
+        }
+    }
+
+    private func waitForTranscriptStability(idleTime: TimeInterval, timeout: TimeInterval) async {
+        let deadline = Date().addingTimeInterval(timeout)
+
+        while Date() < deadline {
+            let idleDuration = controlQueue.sync { Date().timeIntervalSince(lastTranscriptUpdate) }
+            if idleDuration >= idleTime {
+                break
+            }
+
+            try? await Task.sleep(nanoseconds: 50_000_000)
+        }
     }
 
     private static func normalizedModelName(_ modelName: String) -> String {
