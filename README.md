@@ -1,5 +1,5 @@
 <div align="center">
-  <h1> this is a foke repo </h1>
+  <h1> this is a fork repo </h1>
   <h2> thanks for Beingpax </h2>
   <h3> https://github.com/Beingpax/VoiceInk </h3>
 </div>
